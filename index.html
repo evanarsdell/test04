@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Five Boroughs Search ATS</title>
-  <!-- Google Fonts & Icons -->
+  <!-- Google Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Theme variables */
+    /* ─── Variables & Base ───────────────────────────────────────── */
     :root {
-      --bg: #fff;
-      --fg: #333;
+      --bg: #ffffff;
+      --fg: #333333;
       --primary: #0066cc;
-      --header-bg: #fafafa;
-      --row-hover: #f5f5f5;
+      --header-bg: #f8f8f8;
+      --row-hover: #f2f2f2;
     }
     .dark {
       --bg: #1e1e1e;
       --fg: #e0e0e0;
       --primary: #3399ff;
       --header-bg: #2a2a2a;
-      --row-hover: #333;
+      --row-hover: #333333;
     }
     body {
       margin: 0;
@@ -29,52 +29,49 @@
       background: var(--bg);
       color: var(--fg);
     }
-    /* Hidden utility */
+    button {
+      cursor: pointer;
+    }
     .hidden { display: none; }
-    /* Header & Nav */
+
+    /* ─── Header & Nav ──────────────────────────────────────────── */
     header {
       position: sticky; top: 0;
       background: var(--header-bg);
-      padding: 0.5rem 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 0.6rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      z-index: 10;
+      z-index: 100;
     }
-    .logo { font-size: 1.3rem; font-weight: 700; }
+    .logo { font-size: 1.4rem; font-weight: 700; }
     nav ul {
       list-style: none;
+      margin: 0; padding: 0;
       display: flex;
-      margin: 0;
-      padding: 0;
     }
     nav li {
       margin-left: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
+      display: flex; align-items: center;
       color: var(--fg);
       transition: color 0.2s;
     }
     nav li i { margin-right: 0.3rem; }
-    nav li.active {
-      color: var(--primary);
-      font-weight: 500;
-    }
-    /* Main content */
-    main { padding: 1rem; }
-    /* Login */
+    nav li.active { color: var(--primary); font-weight: 500; }
+
+    /* ─── Login Screen ──────────────────────────────────────────── */
     #login-screen {
-      max-width: 320px;
+      max-width: 360px;
       margin: 8% auto;
       padding: 1.5rem;
       border: 1px solid #ddd;
-      border-radius: 4px;
+      border-radius: 6px;
       background: var(--bg);
     }
     #login-screen h2 { text-align: center; margin-bottom: 1rem; }
-    #login-screen label { display: block; margin-top: 0.75rem; }
+    #login-screen label {
+      display: block;
+      margin-top: 0.75rem;
+    }
     #login-screen input {
       width: 100%;
       padding: 0.5rem;
@@ -90,14 +87,19 @@
       color: #fff;
       border: none;
       border-radius: 4px;
-      cursor: pointer;
       font-size: 1rem;
     }
-    #login-error { color: #c00; text-align: center; margin-top: 0.5rem; }
-    /* Sections */
-    .section { display: none; }
-    .section.active { display: block; }
-    /* Table */
+    #login-error {
+      color: #c00;
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    /* ─── Main Layout ───────────────────────────────────────────── */
+    #dashboard { display: none; }
+    main { padding: 1rem; }
+
+    /* ─── Tables ───────────────────────────────────────────────── */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -114,9 +116,11 @@
       user-select: none;
     }
     tr:hover { background: var(--row-hover); }
-    /* Compact view */
-    .compact th, .compact td { padding: 0.3rem; }
-    /* Forms */
+    .compact th, .compact td {
+      padding: 0.3rem;
+    }
+
+    /* ─── Forms & Buttons ──────────────────────────────────────── */
     form label { display: block; margin-top: 0.75rem; }
     form input, form select {
       width: 100%;
@@ -135,44 +139,57 @@
       color: #fff;
       border: none;
       border-radius: 4px;
-      cursor: pointer;
+      font-size: 0.95rem;
     }
-    /* Toast */
+
+    /* ─── Toast ────────────────────────────────────────────────── */
     #toast {
       position: fixed;
-      bottom: 1rem;
-      right: 1rem;
+      bottom: 1rem; right: 1rem;
       background: var(--primary);
       color: #fff;
       padding: 0.75rem 1rem;
       border-radius: 4px;
-      opacity: 0;
-      transition: opacity 0.3s;
+      opacity: 0; transition: opacity 0.3s;
+      z-index: 200;
     }
     #toast.show { opacity: 1; }
-    /* Modal */
-    .modal {
+
+    /* ─── Confirm Modal ───────────────────────────────────────── */
+    #confirm-modal {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.5);
-      display: flex;
+      display: none; /* hidden by default */
       align-items: center;
       justify-content: center;
+      z-index: 150;
     }
-    .modal-content {
+    #confirm-modal.active {
+      display: flex;
+    }
+    #confirm-modal .modal-content {
       background: var(--bg);
-      padding: 1rem 1.5rem;
-      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      border-radius: 6px;
       text-align: center;
+      max-width: 320px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
-    .modal-content button {
-      padding: 0.4rem 0.8rem;
-      margin: 0.5rem;
+    #confirm-modal .modal-content p {
+      margin-bottom: 1rem;
+    }
+    #confirm-modal .modal-content button {
+      margin: 0 0.5rem;
+      background: #888;
+      color: #fff;
+      padding: 0.5rem 0.8rem;
       border: none;
       border-radius: 4px;
-      cursor: pointer;
     }
+
+    /* ─── Responsive ─────────────────────────────────────────── */
     @media (max-width: 600px) {
       nav ul { flex-direction: column; }
       nav li { margin: 0.5rem 0; }
@@ -180,33 +197,45 @@
   </style>
 </head>
 <body>
-  <!-- LOGIN -->
+
+  <!-- LOGIN SCREEN -->
   <div id="login-screen">
     <h2>Login</h2>
-    <label>Username
-      <input type="text" id="login-username" autocomplete="off">
+    <label>
+      Username
+      <input type="text" id="login-username" autocomplete="off" />
     </label>
-    <label>Password
-      <input type="password" id="login-password">
+    <label>
+      Password
+      <input type="password" id="login-password" />
     </label>
     <button id="login-btn">Log In</button>
     <div id="login-error"></div>
   </div>
 
   <!-- DASHBOARD -->
-  <div id="dashboard" class="hidden">
+  <div id="dashboard">
     <header>
       <div class="logo">Five Boroughs Search</div>
       <nav>
         <ul>
-          <li data-section="list" class="active"><i class="fa-regular fa-list"></i>📋 Candidate List</li>
-          <li data-section="add"><i class="fa-solid fa-plus"></i>➕ Add New Candidate</li>
-          <li data-section="search"><i class="fa-solid fa-magnifying-glass"></i>🔍 Search/Filter</li>
-          <li data-section="settings"><i class="fa-solid fa-gear"></i>⚙️ Settings</li>
+          <li data-section="list" class="active">
+            <i class="fa-regular fa-list"></i>📋 Candidate List
+          </li>
+          <li data-section="add">
+            <i class="fa-solid fa-plus"></i>➕ Add New Candidate
+          </li>
+          <li data-section="search">
+            <i class="fa-solid fa-magnifying-glass"></i>🔍 Search/Filter
+          </li>
+          <li data-section="settings">
+            <i class="fa-solid fa-gear"></i>⚙️ Settings
+          </li>
         </ul>
       </nav>
     </header>
     <main>
+
       <!-- Candidate List -->
       <section id="list" class="section active">
         <div class="buttons">
@@ -232,15 +261,39 @@
       <!-- Add / Edit Candidate -->
       <section id="add" class="section">
         <form id="candidate-form">
-          <input type="hidden" id="candidate-index">
-          <label>Full Name<input type="text" id="name" required></label>
-          <label>Email<input type="email" id="email" required></label>
-          <label>Phone<input type="tel" id="phone" required></label>
-          <label>Location<input type="text" id="location"></label>
-          <label>Company<input type="text" id="company"></label>
-          <label>Role<input type="text" id="role"></label>
-          <label>Resume Filename<input type="text" id="resume"></label>
-          <label>Tags (comma-separated)<input type="text" id="tags"></label>
+          <input type="hidden" id="candidate-index" />
+          <label>
+            Full Name
+            <input type="text" id="name" required />
+          </label>
+          <label>
+            Email
+            <input type="email" id="email" required />
+          </label>
+          <label>
+            Phone
+            <input type="tel" id="phone" required />
+          </label>
+          <label>
+            Location
+            <input type="text" id="location" />
+          </label>
+          <label>
+            Company
+            <input type="text" id="company" />
+          </label>
+          <label>
+            Role
+            <input type="text" id="role" />
+          </label>
+          <label>
+            Resume Filename
+            <input type="text" id="resume" />
+          </label>
+          <label>
+            Tags (comma‑separated)
+            <input type="text" id="tags" />
+          </label>
           <div class="buttons">
             <button type="submit" id="submit-btn">Submit</button>
             <button type="reset" id="reset-btn">Reset</button>
@@ -250,29 +303,41 @@
 
       <!-- Search / Filter -->
       <section id="search" class="section">
-        <label>Keyword Search<input type="text" id="search-keyword" placeholder="Search..."></label>
-        <label>Filter by Location<select id="filter-location"><option value="">All</option></select></label>
-        <label>Filter by Company<select id="filter-company"><option value="">All</option></select></label>
+        <label>
+          Keyword Search
+          <input type="text" id="search-keyword" placeholder="Search…" />
+        </label>
+        <label>
+          Filter by Location
+          <select id="filter-location"><option value="">All</option></select>
+        </label>
+        <label>
+          Filter by Company
+          <select id="filter-company"><option value="">All</option></select>
+        </label>
       </section>
 
       <!-- Settings -->
       <section id="settings" class="section">
         <h3>Theme</h3>
-        <label><input type="radio" name="theme" value="light" checked> Light</label>
-        <label><input type="radio" name="theme" value="dark"> Dark</label>
+        <label><input type="radio" name="theme" value="light" checked /> Light</label>
+        <label><input type="radio" name="theme" value="dark" /> Dark</label>
+
         <h3>Table View</h3>
-        <label><input type="checkbox" id="compact-toggle"> Compact View</label>
+        <label><input type="checkbox" id="compact-toggle" /> Compact View</label>
+
         <h3>Data</h3>
         <button id="clear-btn">Clear All Data</button>
       </section>
+
     </main>
   </div>
 
-  <!-- Toast -->
+  <!-- Toast Notification -->
   <div id="toast"></div>
 
-  <!-- Confirm Modal -->
-  <div id="confirm-modal" class="modal hidden">
+  <!-- Clear‑Data Confirm Modal -->
+  <div id="confirm-modal">
     <div class="modal-content">
       <p>Are you sure you want to clear all data?</p>
       <button id="confirm-yes">Yes</button>
@@ -281,107 +346,104 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // State
-      var candidates = [];
-      var editingIndex = null;
-      var sortKey = null;
-      var sortAsc = true;
+    document.addEventListener('DOMContentLoaded', () => {
+      // ─── State & Elements ───────────────────────────────────────
+      let candidates = [];
+      let editingIndex = null;
+      let sortKey = null, sortAsc = true;
 
-      // Elements
-      var loginScreen = document.getElementById('login-screen');
-      var dashboard   = document.getElementById('dashboard');
-      var loginBtn    = document.getElementById('login-btn');
-      var loginErr    = document.getElementById('login-error');
-      var usernameEl  = document.getElementById('login-username');
-      var passwordEl  = document.getElementById('login-password');
-      var navItems    = document.querySelectorAll('nav li');
-      var sections    = document.querySelectorAll('.section');
-      var tableBody   = document.querySelector('#candidates-table tbody');
-      var dummyBtn    = document.getElementById('dummy-btn');
-      var form        = document.getElementById('candidate-form');
-      var submitBtn   = document.getElementById('submit-btn');
-      var toast       = document.getElementById('toast');
-      var confirmModal= document.getElementById('confirm-modal');
-      var clearBtn    = document.getElementById('clear-btn');
-      var confirmYes  = document.getElementById('confirm-yes');
-      var confirmNo   = document.getElementById('confirm-no');
-      var searchKw    = document.getElementById('search-keyword');
-      var filterLoc   = document.getElementById('filter-location');
-      var filterComp  = document.getElementById('filter-company');
-      var themeRadios = document.querySelectorAll('input[name="theme"]');
-      var compactChk  = document.getElementById('compact-toggle');
+      const loginScreen  = document.getElementById('login-screen');
+      const dashboard    = document.getElementById('dashboard');
+      const loginBtn     = document.getElementById('login-btn');
+      const loginErr     = document.getElementById('login-error');
+      const userField    = document.getElementById('login-username');
+      const passField    = document.getElementById('login-password');
+      const navItems     = document.querySelectorAll('nav li');
+      const sections     = document.querySelectorAll('.section');
+      const tableBody    = document.querySelector('#candidates-table tbody');
+      const form         = document.getElementById('candidate-form');
+      const submitBtn    = document.getElementById('submit-btn');
+      const dummyBtn     = document.getElementById('dummy-btn');
+      const toast        = document.getElementById('toast');
+      const confirmModal = document.getElementById('confirm-modal');
+      const clearBtn     = document.getElementById('clear-btn');
+      const yesBtn       = document.getElementById('confirm-yes');
+      const noBtn        = document.getElementById('confirm-no');
+      const searchKw     = document.getElementById('search-keyword');
+      const filterLoc    = document.getElementById('filter-location');
+      const filterComp   = document.getElementById('filter-company');
+      const themeRadios  = document.querySelectorAll('input[name="theme"]');
+      const compactChk   = document.getElementById('compact-toggle');
 
-      // --- LOGIN ---
-      loginBtn.addEventListener('click', function(){
-        if (usernameEl.value === 'admin' && passwordEl.value === 'password123') {
-          loginScreen.classList.add('hidden');
-          dashboard.classList.remove('hidden');
+      // ─── Login Logic ────────────────────────────────────────────
+      loginBtn.addEventListener('click', () => {
+        if (userField.value === 'admin' && passField.value === 'password123') {
+          loginScreen.style.display = 'none';
+          dashboard.style.display   = 'block';
         } else {
           loginErr.textContent = 'Invalid credentials';
         }
       });
 
-      // --- NAVIGATION ---
-      navItems.forEach(function(li){
-        li.addEventListener('click', function(){
-          navItems.forEach(i=>i.classList.remove('active'));
+      // ─── Nav Tabs ───────────────────────────────────────────────
+      navItems.forEach(li => {
+        li.addEventListener('click', () => {
+          navItems.forEach(x => x.classList.remove('active'));
           li.classList.add('active');
-          var sec = li.getAttribute('data-section');
-          sections.forEach(s=>s.classList.remove('active'));
+          const sec = li.dataset.section;
+          sections.forEach(s => s.classList.remove('active'));
           document.getElementById(sec).classList.add('active');
         });
       });
 
-      // --- RENDER TABLE ---
-      function renderCandidates(list) {
-        list = list || candidates;
+      // ─── Render Table ──────────────────────────────────────────
+      function renderTable(list = candidates) {
         tableBody.innerHTML = '';
-        list.forEach(function(c, idx){
-          var tr = document.createElement('tr');
-          ['name','email','phone','location','company','role','dateAdded'].forEach(function(k){
-            var td = document.createElement('td');
+        list.forEach((c, i) => {
+          const tr = document.createElement('tr');
+          ['name','email','phone','location','company','role','dateAdded'].forEach(k => {
+            const td = document.createElement('td');
             td.textContent = c[k];
             tr.appendChild(td);
           });
-          var tdAct = document.createElement('td');
-          tdAct.innerHTML =
-            '<button onclick="editCandidate('+idx+')"><i class="fa-solid fa-edit"></i></button> '+
-            '<button onclick="deleteCandidate('+idx+')"><i class="fa-solid fa-trash"></i></button>';
-          tr.appendChild(tdAct);
+          const tdA = document.createElement('td');
+          tdA.innerHTML =
+            `<button onclick="editCandidate(${i})"><i class="fa-solid fa-edit"></i></button>
+             <button onclick="deleteCandidate(${i})"><i class="fa-solid fa-trash"></i></button>`;
+          tr.appendChild(tdA);
           tableBody.appendChild(tr);
         });
         populateFilters();
       }
 
-      // --- SORTING ---
-      document.querySelectorAll('#candidates-table th[data-key]').forEach(function(th){
-        th.addEventListener('click', function(){
-          var key = th.getAttribute('data-key');
-          if (sortKey === key) sortAsc = !sortAsc;
-          else { sortKey = key; sortAsc = true; }
-          candidates.sort(function(a,b){
+      // ─── Sorting ────────────────────────────────────────────────
+      document.querySelectorAll('th[data-key]').forEach(th => {
+        th.addEventListener('click', () => {
+          const key = th.dataset.key;
+          sortAsc = (sortKey === key) ? !sortAsc : true;
+          sortKey = key;
+          candidates.sort((a,b) => {
             if (a[key] < b[key]) return sortAsc ? -1 : 1;
             if (a[key] > b[key]) return sortAsc ? 1 : -1;
             return 0;
           });
-          renderCandidates();
+          renderTable();
         });
       });
 
-      // --- ADD / UPDATE ---
-      form.addEventListener('submit', function(e){
+      // ─── Add / Update Candidate ─────────────────────────────────
+      form.addEventListener('submit', e => {
         e.preventDefault();
-        var cand = {
-          name: document.getElementById('name').value,
-          email: document.getElementById('email').value,
-          phone: document.getElementById('phone').value,
-          location: document.getElementById('location').value,
-          company: document.getElementById('company').value,
-          role: document.getElementById('role').value,
-          resume: document.getElementById('resume').value,
-          tags: document.getElementById('tags').value.split(',').map(t=>t.trim()),
-          dateAdded: new Date().toLocaleDateString()
+        const cand = {
+          name:       form.name.value,
+          email:      form.email.value,
+          phone:      form.phone.value,
+          location:   form.location.value,
+          company:    form.company.value,
+          role:       form.role.value,
+          resume:     form.resume.value,
+          tags:       form.tags.value.split(',').map(t=>t.trim()).filter(Boolean),
+          dateAdded:  new Date().toLocaleDateString()
         };
         if (editingIndex === null) {
           candidates.push(cand);
@@ -393,100 +455,93 @@
           showToast('Candidate updated');
         }
         form.reset();
-        renderCandidates();
-        // switch back to list
+        renderTable();
         document.querySelector('nav li[data-section="list"]').click();
       });
 
-      // --- EDIT & DELETE GLOBAL FUNCS ---
-      window.editCandidate = function(i){
-        var c = candidates[i];
+      // ─── Edit / Delete Globals ──────────────────────────────────
+      window.editCandidate = i => {
+        const c = candidates[i];
         editingIndex = i;
-        ['name','email','phone','location','company','role','resume'].forEach(function(k){
-          document.getElementById(k).value = c[k];
-        });
-        document.getElementById('tags').value = c.tags.join(', ');
+        ['name','email','phone','location','company','role','resume']
+          .forEach(k => form[k].value = c[k]);
+        form.tags.value = c.tags.join(', ');
         submitBtn.textContent = 'Update';
         document.querySelector('nav li[data-section="add"]').click();
       };
-      window.deleteCandidate = function(i){
-        if (confirm('Delete this candidate?')) {
+      window.deleteCandidate = i => {
+        if (confirm('Delete candidate?')) {
           candidates.splice(i,1);
-          renderCandidates();
-          showToast('Candidate deleted');
+          renderTable();
+          showToast('Deleted');
         }
       };
 
-      // --- SEARCH / FILTER ---
-      function applyFilters() {
-        var kw = searchKw.value.toLowerCase();
-        var loc = filterLoc.value;
-        var comp = filterComp.value;
-        var filtered = candidates.filter(function(c){
-          return (!loc || c.location === loc)
-            && (!comp || c.company === comp)
-            && (c.name.toLowerCase().includes(kw)
-                || c.email.toLowerCase().includes(kw)
-                || c.role.toLowerCase().includes(kw)
-                || c.tags.join(' ').toLowerCase().includes(kw));
-        });
-        renderCandidates(filtered);
+      // ─── Search & Filter ───────────────────────────────────────
+      function applyFilter() {
+        const kw = searchKw.value.toLowerCase();
+        const loc = filterLoc.value, comp = filterComp.value;
+        renderTable(candidates.filter(c =>
+          (!loc||c.location===loc) &&
+          (!comp||c.company===comp) &&
+          (c.name.toLowerCase().includes(kw)||
+           c.email.toLowerCase().includes(kw)||
+           c.role.toLowerCase().includes(kw)||
+           c.tags.join(' ').toLowerCase().includes(kw))
+        ));
       }
-      searchKw.addEventListener('input', applyFilters);
-      filterLoc.addEventListener('change', applyFilters);
-      filterComp.addEventListener('change', applyFilters);
+      searchKw.addEventListener('input', applyFilter);
+      filterLoc.addEventListener('change', applyFilter);
+      filterComp.addEventListener('change', applyFilter);
 
       function populateFilters() {
-        var locSet = new Set(candidates.map(c=>c.location).filter(Boolean));
-        var compSet = new Set(candidates.map(c=>c.company).filter(Boolean));
-        filterLoc.innerHTML = '<option value="">All</option>' + Array.from(locSet).map(v=>'<option>'+v+'</option>').join('');
-        filterComp.innerHTML = '<option value="">All</option>' + Array.from(compSet).map(v=>'<option>'+v+'</option>').join('');
+        const locs = [...new Set(candidates.map(c=>c.location).filter(Boolean))];
+        const comps= [...new Set(candidates.map(c=>c.company).filter(Boolean))];
+        filterLoc.innerHTML  = '<option value="">All</option>' + locs.map(v=>`<option>${v}</option>`).join('');
+        filterComp.innerHTML = '<option value="">All</option>' + comps.map(v=>`<option>${v}</option>`).join('');
       }
 
-      // --- SETTINGS ---
-      themeRadios.forEach(function(r){
-        r.addEventListener('change', function(){
-          document.body.classList.toggle('dark', r.value === 'dark');
-        });
-      });
-      compactChk.addEventListener('change', function(){
+      // ─── Settings ──────────────────────────────────────────────
+      themeRadios.forEach(r => r.addEventListener('change', () => {
+        document.body.classList.toggle('dark', r.value==='dark');
+      }));
+      compactChk.addEventListener('change', () => {
         document.body.classList.toggle('compact', compactChk.checked);
       });
 
-      // --- CLEAR DATA ---
-      clearBtn.addEventListener('click', function(){
-        confirmModal.classList.remove('hidden');
-      });
-      confirmYes.addEventListener('click', function(){
-        candidates = [];
-        renderCandidates();
-        confirmModal.classList.add('hidden');
-        showToast('All data cleared');
-      });
-      confirmNo.addEventListener('click', function(){
-        confirmModal.classList.add('hidden');
-      });
-
-      // --- DUMMY DATA ---
-      dummyBtn.addEventListener('click', function(){
+      // ─── Dummy Data ────────────────────────────────────────────
+      dummyBtn.addEventListener('click', () => {
         candidates.push(
-          { name:'Alice Johnson', email:'alice@example.com', phone:'555-1234', location:'NYC', company:'Acme Corp', role:'Engineer', resume:'alice.pdf', tags:['JavaScript','React'], dateAdded:new Date().toLocaleDateString() },
-          { name:'Bob Smith',     email:'bob@example.com',   phone:'555-5678', location:'Boston', company:'Beta LLC',  role:'Designer', resume:'bob.docx',   tags:['UI','UX'],      dateAdded:new Date().toLocaleDateString() },
-          { name:'Carol Lee',     email:'carol@example.com', phone:'555-9012', location:'NYC', company:'Gamma Inc', role:'PM',       resume:'carol.pdf',   tags:['Agile','Scrum'],dateAdded:new Date().toLocaleDateString() }
+          { name:'Alice Johnson', email:'alice@ex.com', phone:'555-1234', location:'NYC', company:'Acme', role:'Eng', resume:'alice.pdf', tags:['JS'], dateAdded:new Date().toLocaleDateString() },
+          { name:'Bob Smith',     email:'bob@ex.com',   phone:'555-5678', location:'Boston', company:'Beta', role:'UX', resume:'bob.docx', tags:['UX'], dateAdded:new Date().toLocaleDateString() }
         );
-        renderCandidates();
+        renderTable();
         showToast('Dummy data added');
       });
 
-      // --- TOAST ---
+      // ─── Clear All Data & Confirm Modal ───────────────────────
+      clearBtn.addEventListener('click', () => {
+        confirmModal.classList.add('active');
+      });
+      yesBtn.addEventListener('click', () => {
+        candidates = [];
+        renderTable();
+        confirmModal.classList.remove('active');
+        showToast('All data cleared');
+      });
+      noBtn.addEventListener('click', () => {
+        confirmModal.classList.remove('active');
+      });
+
+      // ─── Toast Utility ─────────────────────────────────────────
       function showToast(msg) {
         toast.textContent = msg;
         toast.classList.add('show');
-        setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+        setTimeout(()=> toast.classList.remove('show'), 1800);
       }
 
-      // Initial render
-      renderCandidates();
+      // ─── Init ──────────────────────────────────────────────────
+      renderTable();
     });
   </script>
 </body>
