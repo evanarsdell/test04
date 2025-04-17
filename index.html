@@ -1,1 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Five Boroughs Search ATS</title>
+  <!-- Google Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Theme variables */
+    :root {
+      --bg: #fff;
+      --fg: #333;
+      --primary: #0066cc;
+      --header-bg: #fafafa;
+      --row-hover: #f5f5f5;
+    }
+    .dark {
+      --bg: #1e1e1e;
+      --fg: #e0e0e0;
+      --primary: #3399ff;
+      --header-bg: #2a2a2a;
+      --row-hover: #333;
+    }
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    /* Hidden utility */
+    .hidden { display: none; }
+    /* Header & Nav */
+    header {
+      position: sticky; top: 0;
+      background: var(--header-bg);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+    .logo { font-size: 1.3rem; font-weight: 700; }
+    nav ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+    nav li {
+      margin-left: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      color: var(--fg);
+      transition: color 0.2s;
+    }
+    nav li i { margin-right: 0.3rem; }
+    nav li.active {
+      color: var(--primary);
+      font-weight: 500;
+    }
+    /* Main content */
+    main { padding: 1rem; }
+    /* Login */
+    #login-screen {
+      max-width: 320px;
+      margin: 8% auto;
+      padding: 1.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: var(--bg);
+    }
+    #login-screen h2 { text-align: center; margin-bottom: 1rem; }
+    #login-screen label { display: block; margin-top: 0.75rem; }
+    #login-screen input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #login-btn {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 1rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    #login-error { color: #c00; text-align: center; margin-top: 0.5rem; }
+    /* Sections */
+    .section { display: none; }
+    .section.active { display: block; }
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.6rem;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background: var(--header-bg);
+      cursor: pointer;
+      user-select: none;
+    }
+    tr:hover { background: var(--row-hover); }
+    /* Compact view */
+    .compact th, .compact td { padding: 0.3rem; }
+    /* Forms */
+    form label { display: block; margin-top: 0.75rem; }
+    form input, form select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .buttons {
+      margin-top: 1rem;
+    }
+    .buttons button {
+      padding: 0.5rem 1rem;
+      margin-right: 0.5rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: var(--primary);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    #toast.show { opacity: 1; }
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: var(--bg);
+      padding: 1rem 1.5rem;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .modal-content button {
+      padding: 0.4rem 0.8rem;
+      margin: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      nav ul { flex-direction: column; }
+      nav li { margin: 0.5rem 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN -->
+  <div id="login-screen">
+    <h2>Login</h2>
+    <label>Username
+      <input type="text" id="login-username" autocomplete="off">
+    </label>
+    <label>Password
+      <input type="password" id="login-password">
+    </label>
+    <button id="login-btn">Log In</button>
+    <div id="login-error"></div>
+  </div>
 
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="hidden">
+    <header>
+      <div class="logo">Five Boroughs Search</div>
+      <nav>
+        <ul>
+          <li data-section="list" class="active"><i class="fa-regular fa-list"></i>📋 Candidate List</li>
+          <li data-section="add"><i class="fa-solid fa-plus"></i>➕ Add New Candidate</li>
+          <li data-section="search"><i class="fa-solid fa-magnifying-glass"></i>🔍 Search/Filter</li>
+          <li data-section="settings"><i class="fa-solid fa-gear"></i>⚙️ Settings</li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <!-- Candidate List -->
+      <section id="list" class="section active">
+        <div class="buttons">
+          <button id="dummy-btn">Add Dummy Data</button>
+        </div>
+        <table id="candidates-table">
+          <thead>
+            <tr>
+              <th data-key="name">Name</th>
+              <th data-key="email">Email</th>
+              <th data-key="phone">Phone</th>
+              <th data-key="location">Location</th>
+              <th data-key="company">Company</th>
+              <th data-key="role">Role</th>
+              <th data-key="dateAdded">Date Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Add / Edit Candidate -->
+      <section id="add" class="section">
+        <form id="candidate-form">
+          <input type="hidden" id="candidate-index">
+          <label>Full Name<input type="text" id="name" required></label>
+          <label>Email<input type="email" id="email" required></label>
+          <label>Phone<input type="tel" id="phone" required></label>
+          <label>Location<input type="text" id="location"></label>
+          <label>Company<input type="text" id="company"></label>
+          <label>Role<input type="text" id="role"></label>
+          <label>Resume Filename<input type="text" id="resume"></label>
+          <label>Tags (comma-separated)<input type="text" id="tags"></label>
+          <div class="buttons">
+            <button type="submit" id="submit-btn">Submit</button>
+            <button type="reset" id="reset-btn">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Search / Filter -->
+      <section id="search" class="section">
+        <label>Keyword Search<input type="text" id="search-keyword" placeholder="Search..."></label>
+        <label>Filter by Location<select id="filter-location"><option value="">All</option></select></label>
+        <label>Filter by Company<select id="filter-company"><option value="">All</option></select></label>
+      </section>
+
+      <!-- Settings -->
+      <section id="settings" class="section">
+        <h3>Theme</h3>
+        <label><input type="radio" name="theme" value="light" checked> Light</label>
+        <label><input type="radio" name="theme" value="dark"> Dark</label>
+        <h3>Table View</h3>
+        <label><input type="checkbox" id="compact-toggle"> Compact View</label>
+        <h3>Data</h3>
+        <button id="clear-btn">Clear All Data</button>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-content">
+      <p>Are you sure you want to clear all data?</p>
+      <button id="confirm-yes">Yes</button>
+      <button id="confirm-no">No</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // State
+      var candidates = [];
+      var editingIndex = null;
+      var sortKey = null;
+      var sortAsc = true;
+
+      // Elements
+      var loginScreen = document.getElementById('login-screen');
+      var dashboard   = document.getElementById('dashboard');
+      var loginBtn    = document.getElementById('login-btn');
+      var loginErr    = document.getElementById('login-error');
+      var usernameEl  = document.getElementById('login-username');
+      var passwordEl  = document.getElementById('login-password');
+      var navItems    = document.querySelectorAll('nav li');
+      var sections    = document.querySelectorAll('.section');
+      var tableBody   = document.querySelector('#candidates-table tbody');
+      var dummyBtn    = document.getElementById('dummy-btn');
+      var form        = document.getElementById('candidate-form');
+      var submitBtn   = document.getElementById('submit-btn');
+      var toast       = document.getElementById('toast');
+      var confirmModal= document.getElementById('confirm-modal');
+      var clearBtn    = document.getElementById('clear-btn');
+      var confirmYes  = document.getElementById('confirm-yes');
+      var confirmNo   = document.getElementById('confirm-no');
+      var searchKw    = document.getElementById('search-keyword');
+      var filterLoc   = document.getElementById('filter-location');
+      var filterComp  = document.getElementById('filter-company');
+      var themeRadios = document.querySelectorAll('input[name="theme"]');
+      var compactChk  = document.getElementById('compact-toggle');
+
+      // --- LOGIN ---
+      loginBtn.addEventListener('click', function(){
+        if (usernameEl.value === 'admin' && passwordEl.value === 'password123') {
+          loginScreen.classList.add('hidden');
+          dashboard.classList.remove('hidden');
+        } else {
+          loginErr.textContent = 'Invalid credentials';
+        }
+      });
+
+      // --- NAVIGATION ---
+      navItems.forEach(function(li){
+        li.addEventListener('click', function(){
+          navItems.forEach(i=>i.classList.remove('active'));
+          li.classList.add('active');
+          var sec = li.getAttribute('data-section');
+          sections.forEach(s=>s.classList.remove('active'));
+          document.getElementById(sec).classList.add('active');
+        });
+      });
+
+      // --- RENDER TABLE ---
+      function renderCandidates(list) {
+        list = list || candidates;
+        tableBody.innerHTML = '';
+        list.forEach(function(c, idx){
+          var tr = document.createElement('tr');
+          ['name','email','phone','location','company','role','dateAdded'].forEach(function(k){
+            var td = document.createElement('td');
+            td.textContent = c[k];
+            tr.appendChild(td);
+          });
+          var tdAct = document.createElement('td');
+          tdAct.innerHTML =
+            '<button onclick="editCandidate('+idx+')"><i class="fa-solid fa-edit"></i></button> '+
+            '<button onclick="deleteCandidate('+idx+')"><i class="fa-solid fa-trash"></i></button>';
+          tr.appendChild(tdAct);
+          tableBody.appendChild(tr);
+        });
+        populateFilters();
+      }
+
+      // --- SORTING ---
+      document.querySelectorAll('#candidates-table th[data-key]').forEach(function(th){
+        th.addEventListener('click', function(){
+          var key = th.getAttribute('data-key');
+          if (sortKey === key) sortAsc = !sortAsc;
+          else { sortKey = key; sortAsc = true; }
+          candidates.sort(function(a,b){
+            if (a[key] < b[key]) return sortAsc ? -1 : 1;
+            if (a[key] > b[key]) return sortAsc ? 1 : -1;
+            return 0;
+          });
+          renderCandidates();
+        });
+      });
+
+      // --- ADD / UPDATE ---
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        var cand = {
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
+          location: document.getElementById('location').value,
+          company: document.getElementById('company').value,
+          role: document.getElementById('role').value,
+          resume: document.getElementById('resume').value,
+          tags: document.getElementById('tags').value.split(',').map(t=>t.trim()),
+          dateAdded: new Date().toLocaleDateString()
+        };
+        if (editingIndex === null) {
+          candidates.push(cand);
+          showToast('Candidate added');
+        } else {
+          candidates[editingIndex] = cand;
+          editingIndex = null;
+          submitBtn.textContent = 'Submit';
+          showToast('Candidate updated');
+        }
+        form.reset();
+        renderCandidates();
+        // switch back to list
+        document.querySelector('nav li[data-section="list"]').click();
+      });
+
+      // --- EDIT & DELETE GLOBAL FUNCS ---
+      window.editCandidate = function(i){
+        var c = candidates[i];
+        editingIndex = i;
+        ['name','email','phone','location','company','role','resume'].forEach(function(k){
+          document.getElementById(k).value = c[k];
+        });
+        document.getElementById('tags').value = c.tags.join(', ');
+        submitBtn.textContent = 'Update';
+        document.querySelector('nav li[data-section="add"]').click();
+      };
+      window.deleteCandidate = function(i){
+        if (confirm('Delete this candidate?')) {
+          candidates.splice(i,1);
+          renderCandidates();
+          showToast('Candidate deleted');
+        }
+      };
+
+      // --- SEARCH / FILTER ---
+      function applyFilters() {
+        var kw = searchKw.value.toLowerCase();
+        var loc = filterLoc.value;
+        var comp = filterComp.value;
+        var filtered = candidates.filter(function(c){
+          return (!loc || c.location === loc)
+            && (!comp || c.company === comp)
+            && (c.name.toLowerCase().includes(kw)
+                || c.email.toLowerCase().includes(kw)
+                || c.role.toLowerCase().includes(kw)
+                || c.tags.join(' ').toLowerCase().includes(kw));
+        });
+        renderCandidates(filtered);
+      }
+      searchKw.addEventListener('input', applyFilters);
+      filterLoc.addEventListener('change', applyFilters);
+      filterComp.addEventListener('change', applyFilters);
+
+      function populateFilters() {
+        var locSet = new Set(candidates.map(c=>c.location).filter(Boolean));
+        var compSet = new Set(candidates.map(c=>c.company).filter(Boolean));
+        filterLoc.innerHTML = '<option value="">All</option>' + Array.from(locSet).map(v=>'<option>'+v+'</option>').join('');
+        filterComp.innerHTML = '<option value="">All</option>' + Array.from(compSet).map(v=>'<option>'+v+'</option>').join('');
+      }
+
+      // --- SETTINGS ---
+      themeRadios.forEach(function(r){
+        r.addEventListener('change', function(){
+          document.body.classList.toggle('dark', r.value === 'dark');
+        });
+      });
+      compactChk.addEventListener('change', function(){
+        document.body.classList.toggle('compact', compactChk.checked);
+      });
+
+      // --- CLEAR DATA ---
+      clearBtn.addEventListener('click', function(){
+        confirmModal.classList.remove('hidden');
+      });
+      confirmYes.addEventListener('click', function(){
+        candidates = [];
+        renderCandidates();
+        confirmModal.classList.add('hidden');
+        showToast('All data cleared');
+      });
+      confirmNo.addEventListener('click', function(){
+        confirmModal.classList.add('hidden');
+      });
+
+      // --- DUMMY DATA ---
+      dummyBtn.addEventListener('click', function(){
+        candidates.push(
+          { name:'Alice Johnson', email:'alice@example.com', phone:'555-1234', location:'NYC', company:'Acme Corp', role:'Engineer', resume:'alice.pdf', tags:['JavaScript','React'], dateAdded:new Date().toLocaleDateString() },
+          { name:'Bob Smith',     email:'bob@example.com',   phone:'555-5678', location:'Boston', company:'Beta LLC',  role:'Designer', resume:'bob.docx',   tags:['UI','UX'],      dateAdded:new Date().toLocaleDateString() },
+          { name:'Carol Lee',     email:'carol@example.com', phone:'555-9012', location:'NYC', company:'Gamma Inc', role:'PM',       resume:'carol.pdf',   tags:['Agile','Scrum'],dateAdded:new Date().toLocaleDateString() }
+        );
+        renderCandidates();
+        showToast('Dummy data added');
+      });
+
+      // --- TOAST ---
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+      }
+
+      // Initial render
+      renderCandidates();
+    });
+  </script>
+</body>
+</html>
